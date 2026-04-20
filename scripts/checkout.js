@@ -73,12 +73,15 @@ function getNextPageSlugForRedirect() {
   return "/";
 }
 
-let isTest = JSON.parse(sessionStorage.getItem("test"));
+let isTest = sessionStorage.getItem("test");
 
-if (isTest === null && isTest !== false) {
+if (isTest === null) {
   isTest = true;
-  sessionStorage.setItem("test", isTest);
+  sessionStorage.setItem("test", String(isTest));
+} else {
+  isTest = isTest === "true";
 }
+
 const removeKlarnaParamsFromUrl = (urlValue) => {
   const sourceUrl = urlValue || window.location.href;
   const url = new URL(sourceUrl, window.location.origin);
@@ -602,7 +605,7 @@ async function createOrderViaWallet(confirmationToken, paymentMethodId) {
         ?.getAttribute("data-shipping-profile-id") || undefined;
 
   const orderData = {
-    pageId: "ife0N00IU0EctvWaeJ4JbD9GL1arVlU2g_ZtGNCNgmSEzjqq8PE-xUltxLO7ovZb",
+    pageId: "lnZm_pKILNlR4Pg5hGNT33gg2g9BIeDLt8EiwAmhIYbkznh0NIfwMusoCquh2vXH",
     action: "process",
     campaign_id: CAMPAIGN_ID,
     connection_id: 1,
@@ -628,7 +631,8 @@ async function createOrderViaWallet(confirmationToken, paymentMethodId) {
       {
         offer_id: getVrioOfferIdByProductId(selectedProduct.id) ?? DEFAULT_OFFER_ID,
         order_offer_quantity: 1,
-        item_id: Number(selectedProduct.id)
+        item_id: Number(selectedProduct.id),
+        mainOffer: true
       }
     ],
     shipping_profile_id: shippingProfileId,
@@ -1389,7 +1393,7 @@ async function createOrderViaPaypal(isExpress = false) {
   const shippingProfileId = +document.querySelector(`[data-product-id="${selectedProduct.id}"]`)?.getAttribute('data-shipping-profile-id') || undefined;
   const sameAddress = isSameAddress();
   const orderData = {
-    pageId: "ife0N00IU0EctvWaeJ4JbD9GL1arVlU2g_ZtGNCNgmSEzjqq8PE-xUltxLO7ovZb",
+    pageId: "lnZm_pKILNlR4Pg5hGNT33gg2g9BIeDLt8EiwAmhIYbkznh0NIfwMusoCquh2vXH",
     action: "process",
     campaign_id: CAMPAIGN_ID,
     connection_id: 1, // VRIO URL ending /connection
@@ -1406,7 +1410,7 @@ async function createOrderViaPaypal(isExpress = false) {
     bill_fname: billingFirstName || firstName,
     bill_lname: billingLastName || lastName,
     bill_address1: billingAddress1 || shippingAddress1,
-    bill_address2: billingAddress2 || shippingAddress2,
+    bill_address2: billingAddress2,
     bill_city: billingCity || shippingCity,
     bill_state: normalizedBillState || normalizedShipState,
     bill_zipcode: billingZip || shippingZip,
@@ -1419,6 +1423,7 @@ async function createOrderViaPaypal(isExpress = false) {
         offer_id: getVrioOfferIdByProductId(selectedProduct.id) ?? DEFAULT_OFFER_ID,
         order_offer_quantity: 1,
         item_id: Number(selectedProduct.id),
+        mainOffer: true
       },
     ],
     shipping_profile_id: shippingProfileId,
@@ -1687,7 +1692,7 @@ async function createOrderViaKlarna() {
   const sameAddress = isSameAddress();
 
   const orderData = {
-    pageId: "ife0N00IU0EctvWaeJ4JbD9GL1arVlU2g_ZtGNCNgmSEzjqq8PE-xUltxLO7ovZb",
+    pageId: "lnZm_pKILNlR4Pg5hGNT33gg2g9BIeDLt8EiwAmhIYbkznh0NIfwMusoCquh2vXH",
     campaign_id: CAMPAIGN_ID,
     connection_id: 1,
     email: email,
@@ -1703,7 +1708,7 @@ async function createOrderViaKlarna() {
     bill_fname: billingFirstName || firstName,
     bill_lname: billingLastName || lastName,
     bill_address1: billingAddress1 || shippingAddress1,
-    bill_address2: billingAddress2 || shippingAddress2,
+    bill_address2: billingAddress2,
     bill_city: billingCity || shippingCity,
     bill_state: normalizedBillState || normalizedShipState,
     bill_zipcode: billingZip || shippingZip,
@@ -1792,7 +1797,8 @@ async function createOrderViaKlarna() {
       offer_id:
         selectedProductOfferData?.offerId ?? DEFAULT_OFFER_ID,
       order_offer_quantity: 1,
-      item_id: Number(selectedProduct.id)
+      item_id: Number(selectedProduct.id),
+      mainOffer: true
     });
   }
 
@@ -2064,7 +2070,7 @@ async function createOrderViaCreditCard() {
   let orderTotal = Math.max(0, Number(selectedProduct.price) * selectedProduct.quantity);
 
   const orderData = {
-    pageId: "ife0N00IU0EctvWaeJ4JbD9GL1arVlU2g_ZtGNCNgmSEzjqq8PE-xUltxLO7ovZb",
+    pageId: "lnZm_pKILNlR4Pg5hGNT33gg2g9BIeDLt8EiwAmhIYbkznh0NIfwMusoCquh2vXH",
     action: "process",
     campaign_id: CAMPAIGN_ID,
     connection_id: 1, // VRIO URL ending /connection
@@ -2084,7 +2090,7 @@ async function createOrderViaCreditCard() {
     bill_fname: billingFirstName || firstName,
     bill_lname: billingLastName || lastName,
     bill_address1: billingAddress1 || shippingAddress1,
-    bill_address2: billingAddress2 || shippingAddress2,
+    bill_address2: billingAddress2,
     bill_city: billingCity || shippingCity,
     bill_state: normalizedBillState || normalizedShipState,
     bill_zipcode: billingZip || shippingZip,
@@ -2106,6 +2112,7 @@ async function createOrderViaCreditCard() {
         offer_id: getVrioOfferIdByProductId(selectedProduct.id) ?? DEFAULT_OFFER_ID,
         order_offer_quantity: 1,
         item_id: Number(selectedProduct.id),
+        mainOffer: true
       },
     ],
     shipping_profile_id: shippingProfileId,
@@ -4103,7 +4110,7 @@ async function returnPaypal() {
 ;
 
     const body = {
-        pageId: "ife0N00IU0EctvWaeJ4JbD9GL1arVlU2g_ZtGNCNgmSEzjqq8PE-xUltxLO7ovZb",
+        pageId: "lnZm_pKILNlR4Pg5hGNT33gg2g9BIeDLt8EiwAmhIYbkznh0NIfwMusoCquh2vXH",
         action: "process",
         campaign_id: CAMPAIGN_ID,
         connection_id: 1,
@@ -4526,7 +4533,7 @@ function handleFreeGiftParam(allProducts) {
     }
 
     let currentProduct;
-    const productsElements = document.querySelectorAll('[data-products] [data-product-id]');
+    const productsElements = document.querySelectorAll('[data-products] [data-product-id]:not([data-bundled-upsell])');
     const activeProduct = document.querySelector('[data-products] .product-card-active');
     if (activeProduct && prices) {
       const foundProduct = prices.find(
@@ -4549,7 +4556,6 @@ function handleFreeGiftParam(allProducts) {
     const discountFromUrlParam = parseInt(sessionStorage.getItem('p_dc'));
     const hasTenBucksOff = sessionStorage.getItem('p_tenbucksoff') === 'yes';
     if (discountFromUrlParam || hasTenBucksOff) {
-      applyDiscount(10);
       applyDiscount(discountFromUrlParam, hasTenBucksOff);
     }
 
@@ -4592,12 +4598,14 @@ function handleFreeGiftParam(allProducts) {
         }
       });
 
-      if (isTenBucksDiscount) {
-        currentProduct.price =
-          (currentProduct.price * currentProduct.quantity - 10) / currentProduct.quantity;
-      } else {
-        currentProduct.price =
-          currentProduct.price - (currentProduct.price * discountPercent) / 100;
+      if (currentProduct) {
+        if (isTenBucksDiscount) {
+          currentProduct.price =
+            (currentProduct.price * currentProduct.quantity - 10) / currentProduct.quantity;
+        } else {
+          currentProduct.price =
+            currentProduct.price - (currentProduct.price * discountPercent) / 100;
+        }
       }
 
       const discountContainers = document.querySelectorAll(
@@ -4652,13 +4660,12 @@ function handleFreeGiftParam(allProducts) {
       const currentUnitPrice = Number(currentProduct?.price || 0);
 
       if (currentProduct) {
-        const fullPriceElement = Number(
-          document
-            .querySelector(
-              `[data-product-card][data-product-id='${currentProduct.id}'] [data_product_full_price]`,
-            )
-            .innerHTML.replaceAll(",", ".").replaceAll(/[^0-9.]+/g, ''),
+        const fullPriceNode = document.querySelector(
+          `[data-product-card][data-product-id='${currentProduct.id}'] [data_product_full_price]`,
         );
+        const fullPriceElement = fullPriceNode
+          ? parseFloat(fullPriceNode.innerHTML.replaceAll(",", ".").replace(/[^0-9.,]+/g, '')) || 0
+          : currentUnitPrice;
         hasItems = true;
         if (shouldSkipRecurring && isRecurringByProductId(currentProduct.id)) {
           // Skip recurring main product for Klarna
@@ -4762,8 +4769,9 @@ function handleFreeGiftParam(allProducts) {
         if (shouldSkipRecurring && isRecurringByProductId(productObject.id)) {
           return;
         }
-        hasItems = true;
         const product = prices.find((p) => p.id === Number(productObject.id));
+        if (!product) return;
+        hasItems = true;
         const productElement = getProductElement(productObject.id);
         const customName =
           productElement.dataset.customProductName ||
